@@ -1,0 +1,47 @@
+---
+layout: page
+title: food
+permalink: /food/
+---
+
+{% for food in site.food %}
+
+{% if food.redirect %}
+<div class="food">
+    <div class="thumbnail">
+        <a href="{{ food.redirect }}" target="_blank">
+        {% if food.img %}
+        <img class="thumbnail" src="{{ food.img }}"/>
+        {% else %}
+        <div class="thumbnail blankbox"></div>
+        {% endif %}    
+        <span>
+            <h1>{{ food.title }}</h1>
+            <br/>
+            <p>{{ food.description }}</p>
+        </span>
+        </a>
+    </div>
+</div>
+{% else %}
+
+<div class="food ">
+    <div class="thumbnail">
+        <a href="{{ site.baseurl }}{{ food.url }}">
+        {% if food.img %}
+        <img class="thumbnail" src="{{ food.img }}"/>
+        {% else %}
+        <div class="thumbnail blankbox"></div>
+        {% endif %}    
+        <span>
+            <h1>{{ food.title }}</h1>
+            <br/>
+            <p>{{ food.description }}</p>
+        </span>
+        </a>
+    </div>
+</div>
+
+{% endif %}
+
+{% endfor %}
