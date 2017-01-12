@@ -9,7 +9,7 @@ description: A selection of projects I have done. Most focus around improving de
 {% for project in site.projects reversed %}
     <li>
         <h2><a class="project-title" href="{{ project.url | prepend: site.baseurl }}">{{ project.title }}</a></h2>
-        <p class="post-meta">{{ project.date | date: '%B %-d, %Y — %H:%M' }}</p>
+        <p class="post-meta">{{ project.date | date: '%B %-d, %Y}}</p>
       </li>
 {% endfor %}
 </ul>
