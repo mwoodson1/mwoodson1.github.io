@@ -1,6 +1,6 @@
 ---
 layout: post
-title: NeuroPhi Project Writeup
+title: NeuroPhi - Improving CNN Runtime on Intel Xeon Phi via FFT
 date: 2015-05-25 08:00:00
 ---
 

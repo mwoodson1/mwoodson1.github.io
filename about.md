@@ -7,7 +7,7 @@ permalink: /about/
 <img class="col one right" src="/img/prof_pic.jpg">
 
 <br/>
-Hello! I'm <strong>Markus Woodson</strong>, a current masters
+Hello! I'm <strong>Markus Woodson</strong>, a current Masters
 student in the Electrical and Computer Engineering department at
 Carnegie Mellon University. My interests lie in video
 understanding, deep learning, and learning in difficult paradigms
@@ -18,7 +18,7 @@ find my thoughts and some tutorials on these subjects in my
 Deep learning, as with many other technical fields, involves a lot
 of creativity. My favorite place to practice my
 creativity is in the kitchen where all of the senses are engaged
-to create something that looks, tastes, smells, feels, and even sounds (think crunchy!) delicious. You can check out some of my masterpieces and masterpieces from other places I have visited
+to create something that looks, tastes, smells, feels, and even sounds (think crunchy!) delicious. You can check out some of mine, as well as others, culinary masterpieces
 <a href="">here</a>.
 
 If you are interested in my work or qualifications then check out my
