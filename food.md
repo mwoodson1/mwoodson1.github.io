@@ -8,7 +8,7 @@ Take a look at some of my own, and others, culinary creations! I do not believe 
 {% for food in site.food %}
 
 {% if food.redirect %}
-<div class="food">
+<div class="project">
     <div class="thumbnail">
         <a href="{{ food.redirect }}" target="_blank">
         {% if food.img %}
@@ -26,7 +26,7 @@ Take a look at some of my own, and others, culinary creations! I do not believe 
 </div>
 {% else %}
 
-<div class="food ">
+<div class="project ">
     <div class="thumbnail">
         <a href="{{ site.baseurl }}{{ food.url }}">
         {% if food.img %}
@@ -35,7 +35,7 @@ Take a look at some of my own, and others, culinary creations! I do not believe 
         <div class="thumbnail blankbox"></div>
         {% endif %}
         <span>
-            <h1>{{ food.title }}</h1>
+            <h3>{{ food.title }}</h3>
             <br/>
             <p>{{ food.description }}</p>
         </span>
