@@ -3,6 +3,7 @@ layout: page
 title: food
 permalink: /food/
 ---
+Take a look at some of my own, and others, culinary creations! I do not believe in recipes if you truly want to cook but I'll try to provide all ingredients and tips in making the things I made. If you still want a recipe shoot me a mail and I can make up some numbers for you :).
 
 {% for food in site.food %}
 
@@ -14,7 +15,7 @@ permalink: /food/
         <img class="thumbnail" src="{{ food.img }}"/>
         {% else %}
         <div class="thumbnail blankbox"></div>
-        {% endif %}    
+        {% endif %}
         <span>
             <h1>{{ food.title }}</h1>
             <br/>
@@ -32,7 +33,7 @@ permalink: /food/
         <img class="thumbnail" src="{{ food.img }}"/>
         {% else %}
         <div class="thumbnail blankbox"></div>
-        {% endif %}    
+        {% endif %}
         <span>
             <h1>{{ food.title }}</h1>
             <br/>
