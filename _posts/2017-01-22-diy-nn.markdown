@@ -5,7 +5,7 @@ date:   2017-01-22
 description: A quick introduction to neural networks and how to implement your own
 use_math: true
 ---
-NOTE: You can find all the code [here]()!
+NOTE: You can find all the code [here](https://github.com/mwoodson1/neural_network_tutorials/blob/master/diy-neural-network/simple_nn.ipynb)!
 
 # Introduction
 For this first deep learning related blog post I will follow the tradition of deep learning bloggers doing a basic neural network for their first blog. The tradition is just though as it is a good exercise I believe everyone should do at least once. Even though it seems routine I hope though that I can present a different perspective than most others. In particular I will stray from any brain or neuron related analogies and explain the concepts more mathematically.
