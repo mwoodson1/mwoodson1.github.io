@@ -8,13 +8,16 @@ use_math: true
 NOTE: You can find all the code [here](https://github.com/mwoodson1/neural_network_tutorials/blob/master/diy-neural-network/simple_nn.ipynb)!
 
 # Introduction
-For this first deep learning related blog post I will follow the tradition of deep learning bloggers doing a basic neural network for their first blog. The tradition is just though as it is a good exercise I believe everyone should do at least once. Even though it seems routine I hope though that I can present a different perspective than most others. In particular I will stray from any brain or neuron related analogies and explain the concepts more mathematically.
+For this first deep learning related blog post I will follow the tradition of deep learning bloggers doing a basic neural network for their first blog. The tradition is just though, as it is a good exercise I believe everyone should do at least once. Even though it seems routine I hope though that I can present a different perspective than most others. In particular, I will stray from any brain or neuron related analogies and explain the concepts more mathematically.
 
-I will do a few derivations but a large portion of the math will be left to the reader. Due to this I expect at least basic understanding of linear algebra, calculus, and some of the basics of machine learning.
+I will do a few derivations but a large portion of the math will be left to the reader. Due to this, I expect at least basic understanding of linear algebra, calculus, and some of the basics of machine learning.
 
 ## Import our Libraries
 I will primarily use the Numpy library in this and future tutorials. If you are unfamiliar with Numpy I suggest you take a look at some of the following references:
 
+- [CS321N Numpy Tutorial](http://cs231n.github.io/python-numpy-tutorial/)
+- [Numpy for Matlab Users](https://docs.scipy.org/doc/numpy-dev/user/numpy-for-matlab-users.html)
+- [Official Docs](https://docs.scipy.org/doc/numpy-dev/user/quickstart.html)
 
 I also use Matplotlib which has syntax very similar to that used in Matlab. scikit-learn is only used for importing our dataset but I encourage you to play around with other datasets to see how this code performs!
 
@@ -31,7 +34,7 @@ import matplotlib.pyplot as plt
 ## Our Dataset
 We will be working with scikit-learn's MNIST dataset in this tutorial. This dataset consists of a set of images of digits 0-9 in the form of a 8x8 array or 64 total pixels. This dataset is commonly used to benchmark neural network performance in the literature so it is good to get to know it now rather than later.
 
-Before doing any kind of processing or running any machine learning algorithms you should always give at least a cursory glance at your data. In this case I am very familiar with this MNIST dataset and know the distribution of classes is relatively uniform, an image cannot have multiple labels, and other properties which are important in choosing your machine learning algorithm of choice. Because of this prior knowledge I only show what the images look like but I encourage you to get to know your data before simply throwing deep learning at it! In some cases you can get away with much simpler algorithms.
+Before doing any kind of processing or running any machine learning algorithms, you should always give at least a cursory glance at your data. In this case, I am very familiar with this MNIST dataset and know the distribution of classes is relatively uniform, an image cannot have multiple labels, and other properties which are important in choosing your machine learning algorithm of choice. Because of this prior knowledge, I only show what the images look like but I encourage you to get to know your data before simply throwing deep learning at it! In some cases you can get away with much simpler algorithms.
 
 {% highlight python %}
 digits = load_digits()
@@ -77,18 +80,24 @@ We will start with the simplest neural network of 3 layers; input, hidden, and o
 ### The Activation Function
 Once we have the architecture of our network decided on we need a few more pieces before we can train it. One of the most crucial pieces is the activation function which adds a non-linearity to our network. We will see later that without this non-linearity the entire network can be compressed into a single matrix multiplication. The most common activation function in the current literature is [ReLU](https://en.wikipedia.org/wiki/Rectifier_(neural_networks)) but historically it has been [sigmoid](https://en.wikipedia.org/wiki/Sigmoid_function). For this tutorial I will stick with sigmoid due to its historical importance and ease of understanding the math of backpropogation.
 
-$$ReLU(x) = max(0,x)$$
+<center>
+<a href="https://www.codecogs.com/eqnedit.php?latex=ReLU(x)&space;=&space;max(0,x)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?ReLU(x)&space;=&space;max(0,x)" title="ReLU(x) = max(0,x)" /></a>
+</center>
 
 <img src="../../../img/diy_NN/relu.svg" width="540">
 
-$$sigmoid(x) = \frac{1}{1 + e^{-x}}$$
+<center>
+<a href="https://www.codecogs.com/eqnedit.php?latex=sigmoid(x)&space;=&space;\frac{1}{1&space;&plus;&space;e^{-x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?sigmoid(x)&space;=&space;\frac{1}{1&space;&plus;&space;e^{-x}}" title="sigmoid(x) = \frac{1}{1 + e^{-x}}" /></a>
+</center>
 
 <img src="../../../img/diy_NN/sigmoid.png" width="420">
 
 ### The Output
-Depending on your task you might also need to change the activation function of the output layer as well. In our case since we are performing a classification task we want each node to represent a probability of being that digit. The [softmax](https://en.wikipedia.org/wiki/Softmax_function) activation function does exactly this. Softmax  ensures that the output layer follows the rules of being a probability distribution. The exact formular for this is shown below.
+Depending on your task you might also need to change the activation function of the output layer as well. In our case, since we are performing a classification task, we want each node to represent a probability of being that digit. The [softmax](https://en.wikipedia.org/wiki/Softmax_function) activation function does exactly this. Softmax  ensures that the output layer follows the rules of being a probability distribution. The exact formula for this is shown below.
 
-$$softmax(x_i) = \frac{e^{x_i}}{\sum_{k=1}^K e^{x_k}}$$
+<center>
+<a href="https://www.codecogs.com/eqnedit.php?latex=softmax(x_i)&space;=&space;\frac{e^{x_i}}{\sum_{k=1}^K&space;e^{x_k}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?softmax(x_i)&space;=&space;\frac{e^{x_i}}{\sum_{k=1}^K&space;e^{x_k}}" title="softmax(x_i) = \frac{e^{x_i}}{\sum_{k=1}^K e^{x_k}}" /></a>
+</center>
 
 Below we define our activation function and our output activation function.
 
@@ -122,59 +131,50 @@ def softmax(x):
 Now that we have defined our network we can begin to look at how exactly this structure can be used for classification and how to train such a model. We will start with the easy work first which is the classification or "feed-forward" step.
 
 ### Forward Propogation
-Let $x$ be our input vector and $\hat{y}$ be our output vector. For the forward propogation step we are simply concatenating a series of linear classifiers with a non-linearity. If you are familiar with [logistic regression] you can consider each layer performing a logistic regression followed by a non-linearity. Below is the exact definition of forward propogation
+Let <a href="https://www.codecogs.com/eqnedit.php?latex=x" target="_blank"><img src="https://latex.codecogs.com/gif.latex?x" title="x" /></a> be our input vector and <a href="https://www.codecogs.com/eqnedit.php?latex=\hat{y}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\hat{y}" title="\hat{y}" /></a> be our output vector. For the forward propogation, step we are simply concatenating a series of linear classifiers with a non-linearity. If you are familiar with [logistic regression](https://en.wikipedia.org/wiki/Logistic_regression) you can consider each layer performing a logistic regression followed by a non-linearity. Below is the exact definition of forward propogation
 
-$$\begin{align}
-  z_1 &= xW_1 + b_1  \\
-  a_1 &= \sigma (z_1) \\
-  z_2 &= a_1W_2 + b_2 \\
-  \hat{y}a_2 &= softmax(z_2)
-\end{align}
-$$
+<center>
+<a href="https://www.codecogs.com/eqnedit.php?latex=\begin{align*}&space;z_1&space;&=&space;xW_1&space;&plus;&space;b_1&space;\\&space;a_1&space;&=&space;\sigma&space;(z_1)&space;\\&space;z_2&space;&=&space;a_1W_2&space;&plus;&space;b_2&space;\\&space;\hat{y}a_2&space;&=&space;softmax(z_2)&space;\end{align}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\begin{align*}&space;z_1&space;&=&space;xW_1&space;&plus;&space;b_1&space;\\&space;a_1&space;&=&space;\sigma&space;(z_1)&space;\\&space;z_2&space;&=&space;a_1W_2&space;&plus;&space;b_2&space;\\&space;\hat{y}a_2&space;&=&space;softmax(z_2)&space;\end{align}" title="\begin{align*} z_1 &= xW_1 + b_1 \\ a_1 &= \sigma (z_1) \\ z_2 &= a_1W_2 + b_2 \\ \hat{y}a_2 &= softmax(z_2) \end{align}" /></a>
+</center>
 
-Here $W_1$ is a matrix of weights representing the weighted connections between the input and hidden layer, $b_1$ is a bias term, $W_2$ is the matrix of weights connecting the hidden and output layer, and $b_2$ is the bias term for the last layer.
+Here <a href="https://www.codecogs.com/eqnedit.php?latex=W_1" target="_blank"><img src="https://latex.codecogs.com/gif.latex?W_1" title="W_1" /></a> is a matrix of weights representing the weighted connections between the input and hidden layer, <a href="https://www.codecogs.com/eqnedit.php?latex=b_1" target="_blank"><img src="https://latex.codecogs.com/gif.latex?b_1" title="b_1" /></a> is a bias term, <a href="https://www.codecogs.com/eqnedit.php?latex=W_2" target="_blank"><img src="https://latex.codecogs.com/gif.latex?W_2" title="W_2" /></a> is the matrix of weights connecting the hidden and output layer, and <a href="https://www.codecogs.com/eqnedit.php?latex=b_2" target="_blank"><img src="https://latex.codecogs.com/gif.latex?b_2" title="b_2" /></a> is the bias term for the last layer.
 
 Note that these formulas will vary depending on your non-linearity and number of layers but the mathematics behind it does not change. We can also see from these formulas why a non-linearity is important as without it we could simply compact all the computation into a single matrix multiplication which would result in simple logistic regression.
 
 ### Backpropogation
-Now we get to the real meat of this tutorial which is backpropogation. The goal of backpropogation is to minimize the error in our training data. A common error function to use is [cross-entropy]() which we define below.
+Now we get to the real meat of this tutorial which is backpropogation. The goal of backpropogation is to minimize the error in our training data. A common error function to use is [cross-entropy](https://en.wikipedia.org/wiki/Cross_entropy) which we define below.
 
-$$L(y,\hat{y}) = -\frac{1}{N}\sum_{n\in N}\sum_{i\in C} y_{n,i}log(\hat{y}_{n,i})$$
+<center>
+<a href="https://www.codecogs.com/eqnedit.php?latex=L(y,\hat{y})&space;=&space;-\frac{1}{N}\sum_{n\in&space;N}\sum_{i\in&space;C}&space;y_{n,i}log(\hat{y}_{n,i})" target="_blank"><img src="https://latex.codecogs.com/gif.latex?L(y,\hat{y})&space;=&space;-\frac{1}{N}\sum_{n\in&space;N}\sum_{i\in&space;C}&space;y_{n,i}log(\hat{y}_{n,i})" title="L(y,\hat{y}) = -\frac{1}{N}\sum_{n\in N}\sum_{i\in C} y_{n,i}log(\hat{y}_{n,i})" /></a>
+</center>
 
-Now we have everything we need to start our derivation of backpropogation. The key trick to backpropogation is knowing that we will be optimizing this network with gradient descent. Knowing this all we need to be able to compute is the gradient of the loss with respect to all of the parameters of the network. With this we can make a "step" in the right direction during the optimization process.
+Now we have everything we need to start our derivation of backpropogation. The key trick to backpropogation is knowing that we will be optimizing this network with gradient descent. Knowing this, all we need to be able to compute is the gradient of the loss with respect to all of the parameters of the network. With this we can make a "step" in the right direction during the optimization process.
 
-The reason this algorithm is called backpropogation is the direction in which we go through the network when calculating the gradients is in reverse to the direction we took during forward propogation. Knowing this we first calculate the derivative of the error with respect to the output of the last layer. The derivation for this particular step is rather cumbersome but leads to a elegant solution
+The reason this algorithm is called backpropogation is the direction in which we go through the network when calculating the gradients is in reverse to the direction we took during forward propogation. Knowing this, we first calculate the derivative of the error with respect to the output of the last layer. The derivation for this particular step is rather cumbersome but leads to an elegant solution:
 
-$$\delta_3 = \frac{\partial L}{\partial z_2} = y-\hat{y}$$
+<center>
+<a href="https://www.codecogs.com/eqnedit.php?latex=\delta_3&space;=&space;\frac{\partial&space;L}{\partial&space;z_2}&space;=&space;y-\hat{y}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\delta_3&space;=&space;\frac{\partial&space;L}{\partial&space;z_2}&space;=&space;y-\hat{y}" title="\delta_3 = \frac{\partial L}{\partial z_2} = y-\hat{y}" /></a>
+</center>
 
 Let us also define
 
-$$\delta_2 = \frac{\partial L}{\partial z_1}$$
+<center>
+<a href="https://www.codecogs.com/eqnedit.php?latex=\delta_2&space;=&space;\frac{\partial&space;L}{\partial&space;z_1}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\delta_2&space;=&space;\frac{\partial&space;L}{\partial&space;z_1}" title="\delta_2 = \frac{\partial L}{\partial z_1}" /></a>
+</center>
 
 which translates to the derivative of the loss with respect to the output of layer 1 before applying the activation function or "pre-activation" for short. To calculate this derivative we apply the chain rule of calculus
 
-$$\begin{align}
-\delta_2 &= \frac{\partial L}{\partial z_1} \\
-&= \frac{\partial L}{\partial z_2}\frac{\partial z_2}{\partial z_1} \\
-&= \delta_3 \frac{\partial z_2}{\partial a_1}\frac{\partial a_1}{\partial z_1} \\
-&= \delta_3 W_2 (\sigma(z_1)(1-\sigma(z_1)))
-\end{align}
-$$
+<center>
+<a href="https://www.codecogs.com/eqnedit.php?latex=\begin{align*}&space;\delta_2&space;&=&space;\frac{\partial&space;L}{\partial&space;z_1}&space;\\&space;&=&space;\frac{\partial&space;L}{\partial&space;z_2}\frac{\partial&space;z_2}{\partial&space;z_1}&space;\\&space;&=&space;\delta_3&space;\frac{\partial&space;z_2}{\partial&space;a_1}\frac{\partial&space;a_1}{\partial&space;z_1}&space;\\&space;&=&space;\delta_3&space;W_2&space;(\sigma(z_1)(1-\sigma(z_1)))&space;\end{align*}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\begin{align*}&space;\delta_2&space;&=&space;\frac{\partial&space;L}{\partial&space;z_1}&space;\\&space;&=&space;\frac{\partial&space;L}{\partial&space;z_2}\frac{\partial&space;z_2}{\partial&space;z_1}&space;\\&space;&=&space;\delta_3&space;\frac{\partial&space;z_2}{\partial&space;a_1}\frac{\partial&space;a_1}{\partial&space;z_1}&space;\\&space;&=&space;\delta_3&space;W_2&space;(\sigma(z_1)(1-\sigma(z_1)))&space;\end{align*}" title="\begin{align*} \delta_2 &= \frac{\partial L}{\partial z_1} \\ &= \frac{\partial L}{\partial z_2}\frac{\partial z_2}{\partial z_1} \\ &= \delta_3 \frac{\partial z_2}{\partial a_1}\frac{\partial a_1}{\partial z_1} \\ &= \delta_3 W_2 (\sigma(z_1)(1-\sigma(z_1))) \end{align*}" /></a>
+</center>
 
 With that all of the hard math is done believe it or not. We can easily define all of the gradients we need now
 
-$$
-\begin{align}
-\delta_3 &= y-\hat{y} \\
-\frac{\partial L}{\partial W_2} &= \frac{\partial L}{\partial z_2}\frac{\partial z_2}{\partial W2} = a_1^T\delta_3 \\
-\frac{\partial L}{\partial b_2} &= \delta_3 \\
-\delta_2 &= \delta_3 W_2 (\sigma(z_1)(1-\sigma(z_1))) \\
-\frac{\partial L}{\partial W_1} &= \frac{\partial L}{\partial z_1}\frac{\partial z_1}{\partial W_1} = x^T\delta_2 \\
-\frac{\partial L}{\partial b_1} &= \delta_2
-\end{align}
-$$
+<center>
+<a href="https://www.codecogs.com/eqnedit.php?latex=\begin{align*}&space;\delta_3&space;&=&space;y-\hat{y}&space;\\&space;\frac{\partial&space;L}{\partial&space;W_2}&space;&=&space;\frac{\partial&space;L}{\partial&space;z_2}\frac{\partial&space;z_2}{\partial&space;W2}&space;=&space;a_1^T\delta_3&space;\\&space;\frac{\partial&space;L}{\partial&space;b_2}&space;&=&space;\delta_3&space;\\&space;\delta_2&space;&=&space;\delta_3&space;W_2&space;(\sigma(z_1)(1-\sigma(z_1)))&space;\\&space;\frac{\partial&space;L}{\partial&space;W_1}&space;&=&space;\frac{\partial&space;L}{\partial&space;z_1}\frac{\partial&space;z_1}{\partial&space;W_1}&space;=&space;x^T\delta_2&space;\\&space;\frac{\partial&space;L}{\partial&space;b_1}&space;&=&space;\delta_2&space;\end{align*}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\begin{align*}&space;\delta_3&space;&=&space;y-\hat{y}&space;\\&space;\frac{\partial&space;L}{\partial&space;W_2}&space;&=&space;\frac{\partial&space;L}{\partial&space;z_2}\frac{\partial&space;z_2}{\partial&space;W2}&space;=&space;a_1^T\delta_3&space;\\&space;\frac{\partial&space;L}{\partial&space;b_2}&space;&=&space;\delta_3&space;\\&space;\delta_2&space;&=&space;\delta_3&space;W_2&space;(\sigma(z_1)(1-\sigma(z_1)))&space;\\&space;\frac{\partial&space;L}{\partial&space;W_1}&space;&=&space;\frac{\partial&space;L}{\partial&space;z_1}\frac{\partial&space;z_1}{\partial&space;W_1}&space;=&space;x^T\delta_2&space;\\&space;\frac{\partial&space;L}{\partial&space;b_1}&space;&=&space;\delta_2&space;\end{align*}" title="\begin{align*} \delta_3 &= y-\hat{y} \\ \frac{\partial L}{\partial W_2} &= \frac{\partial L}{\partial z_2}\frac{\partial z_2}{\partial W2} = a_1^T\delta_3 \\ \frac{\partial L}{\partial b_2} &= \delta_3 \\ \delta_2 &= \delta_3 W_2 (\sigma(z_1)(1-\sigma(z_1))) \\ \frac{\partial L}{\partial W_1} &= \frac{\partial L}{\partial z_1}\frac{\partial z_1}{\partial W_1} = x^T\delta_2 \\ \frac{\partial L}{\partial b_1} &= \delta_2 \end{align*}" /></a>
+</center>
 
-And that's it! With this we can now apply gradient descent to train our network. And not one mention of neurons or any relation to the brain at all :). I believe that it is easier to not think of individual neurons and look at these networks as a series of matrix multiplies and non-linearities. This way it is easier to see the relation to other algorithms such as logistic regression and allows you to look at papers which do delve into math and not be afraid. If you feel this was a bit too rushed and you would like more details than check out some of the suggested material I would reccomend at the end of this tutorial. On to the code!
+And that's it! With this we can now apply gradient descent to train our network. And not one mention of neurons or any relation to the brain at all :). I believe that it is easier to not think of individual neurons and look at these networks as a series of matrix multiplies and non-linearities. This way it is easier to see the relation to other algorithms such as logistic regression and allows you to look at papers which do delve into math and not be afraid. If you feel this was a bit too rushed and you would like more details than check out some of the suggested material I would recommend at the end of this tutorial. On to the code!
 
 ## The Code
 {% highlight python %}
@@ -309,7 +309,7 @@ model.train(X_train,y_train,nb_epoch)
 And that's all there is to it! There are of course many things that could be added to this model to make it perform better but I will leave those as exercises to the reader. I hope I have de-mystified neural networks for you a bit and have shown that you don't have to resort to brain analogies in order to describe them and that in fact it might be best to avoid relation to the brain at all!
 
 ## Things to Try
-Below are some exercises you can attempt to confirm you understand the backpropogation algorithm and the different components of a neural network. I also list some "essential reading" which goes over some of these methods. I highly reccomend you go over those papers as they will be your bread and butter of sorts.
+Below are some exercises you can attempt to confirm you understand the backpropogation algorithm and the different components of a neural network. I also list some "essential reading" which goes over some of these methods. I highly recommend you go over those papers as they will be your bread and butter of sorts.
 
 - Play around with the various hyperparameters
 - Add dropout
